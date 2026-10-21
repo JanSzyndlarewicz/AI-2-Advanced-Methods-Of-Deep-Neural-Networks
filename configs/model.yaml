@@ -1,0 +1,26 @@
+model_id: qwen/qwen3-8b          # verified against GET /v1/models in Stage 0 (see DECISIONS.md)
+base_url: http://localhost:1234/v1
+api_key: lm-studio
+thinking_strategy: A_template_kwargs   # A_template_kwargs | B_soft_switch | C_manual
+context_length: 12288
+lmstudio_version: "llama-server 0.6.0-dev commit fc9ce6b (LM Studio llama.cpp backend 2.55.0 cuda12), run standalone"
+sampling:
+  "on":
+    temperature: 0.6
+    top_p: 0.95
+    top_k: 20
+    min_p: 0.0
+    presence_penalty: 0.0
+    max_tokens: 6000
+  "off":
+    temperature: 0.7
+    top_p: 0.8
+    top_k: 20
+    min_p: 0.0
+    presence_penalty: 0.0
+    max_tokens: 2000
+judge:                            # greedy is allowed for the P0 judge only (spec 4 / 8.3)
+  temperature: 0.0
+  top_p: 1.0
+  top_k: 1
+  max_tokens: 600

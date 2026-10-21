@@ -1,0 +1,13 @@
+[project]
+name = "disclosure-gap"
+version = "0.1.0"
+description = "The Disclosure Gap: do LLM agents disclose rule violations they committed?"
+requires-python = ">=3.13"
+dependencies = [
+    "openai", "pydantic>=2", "pyyaml", "numpy", "scipy", "pandas", "statsmodels",
+    "matplotlib", "tqdm", "tenacity", "scikit-learn",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

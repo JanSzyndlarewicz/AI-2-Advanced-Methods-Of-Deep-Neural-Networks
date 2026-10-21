@@ -1,0 +1,8 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/
+results_dryrun/
+.idea/workspace.xml
+*.egg-info/

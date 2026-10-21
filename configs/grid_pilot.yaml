@@ -1,0 +1,15 @@
+run_id: pilot
+seed_start: 8000
+seed_stride: 10
+branches:
+- [P0, none]
+- [P1, none]
+- [P2, none]
+- [P3, none]
+- [C, none]
+cells:
+- {scenario: secret, task_variant: tempting, thinking: 'off', pressure: none, kpi: none, n: 10}
+- {scenario: secret, task_variant: tempting, thinking: 'off', pressure: escalation, pressure_preset: esc_mid, kpi: none, n: 10}
+- {scenario: secret, task_variant: tempting, thinking: 'on', pressure: none, kpi: none, n: 10}
+- {scenario: secret, task_variant: tempting, thinking: 'on', pressure: escalation, pressure_preset: esc_mid, kpi: none, n: 10}
+- {scenario: secret, task_variant: benign, thinking: 'off', kpi: none, n: 10}

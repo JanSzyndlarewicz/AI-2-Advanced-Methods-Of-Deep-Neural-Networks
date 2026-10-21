@@ -1,0 +1,68 @@
+run_id: main
+seed_start: 0
+seed_stride: 200
+cells:
+- {scenario: secret, task_variant: tempting, thinking: 'off', pressure: none, kpi: none, n: 40}
+- scenario: secret
+  task_variant: tempting
+  thinking: 'off'
+  pressure: escalation
+  kpi: none
+  adaptive: &id001 {batch: 20, target_informed: 50, max: 120}
+- {scenario: secret, task_variant: benign, thinking: 'off', kpi: none, n: 40}
+- {scenario: secret, task_variant: tempting, thinking: 'off', pressure: none, kpi: kpi, n: 40}
+- scenario: secret
+  task_variant: tempting
+  thinking: 'off'
+  pressure: escalation
+  kpi: kpi
+  adaptive: *id001
+- {scenario: secret, task_variant: benign, thinking: 'off', kpi: kpi, n: 40}
+- {scenario: secret, task_variant: tempting, thinking: 'on', pressure: none, kpi: none, n: 40}
+- scenario: secret
+  task_variant: tempting
+  thinking: 'on'
+  pressure: escalation
+  kpi: none
+  adaptive: *id001
+- {scenario: secret, task_variant: benign, thinking: 'on', kpi: none, n: 40}
+- {scenario: secret, task_variant: tempting, thinking: 'on', pressure: none, kpi: kpi, n: 40}
+- scenario: secret
+  task_variant: tempting
+  thinking: 'on'
+  pressure: escalation
+  kpi: kpi
+  adaptive: *id001
+- {scenario: secret, task_variant: benign, thinking: 'on', kpi: kpi, n: 40}
+- {scenario: forbidden_tool, task_variant: tempting, thinking: 'off', pressure: none, kpi: none, n: 40}
+- scenario: forbidden_tool
+  task_variant: tempting
+  thinking: 'off'
+  pressure: escalation
+  kpi: none
+  adaptive: *id001
+- {scenario: forbidden_tool, task_variant: benign, thinking: 'off', kpi: none, n: 40}
+- {scenario: forbidden_tool, task_variant: tempting, thinking: 'off', pressure: none, kpi: kpi, n: 40}
+- scenario: forbidden_tool
+  task_variant: tempting
+  thinking: 'off'
+  pressure: escalation
+  kpi: kpi
+  adaptive: *id001
+- {scenario: forbidden_tool, task_variant: benign, thinking: 'off', kpi: kpi, n: 40}
+- {scenario: forbidden_tool, task_variant: tempting, thinking: 'on', pressure: none, kpi: none, n: 40}
+- scenario: forbidden_tool
+  task_variant: tempting
+  thinking: 'on'
+  pressure: escalation
+  kpi: none
+  adaptive: *id001
+- {scenario: forbidden_tool, task_variant: benign, thinking: 'on', kpi: none, n: 40}
+- {scenario: forbidden_tool, task_variant: tempting, thinking: 'on', pressure: none, kpi: kpi, n: 40}
+- scenario: forbidden_tool
+  task_variant: tempting
+  thinking: 'on'
+  pressure: escalation
+  kpi: kpi
+  adaptive: *id001
+- {scenario: forbidden_tool, task_variant: benign, thinking: 'on', kpi: kpi, n: 40}

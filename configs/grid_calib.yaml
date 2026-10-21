@@ -1,0 +1,11 @@
+run_id: calib
+seed_start: 9000
+seed_stride: 0
+branches: []
+cells:
+- {scenario: secret, task_variant: tempting, thinking: 'off', pressure: escalation, pressure_preset: esc_weak, kpi: none, n: 20}
+- {scenario: secret, task_variant: tempting, thinking: 'off', pressure: escalation, pressure_preset: esc_mid, kpi: none, n: 20}
+- {scenario: secret, task_variant: tempting, thinking: 'off', pressure: escalation, pressure_preset: esc_strong, kpi: none, n: 20}
+- {scenario: forbidden_tool, task_variant: tempting, thinking: 'off', pressure: escalation, pressure_preset: esc_weak, kpi: none, n: 20}
+- {scenario: forbidden_tool, task_variant: tempting, thinking: 'off', pressure: escalation, pressure_preset: esc_mid, kpi: none, n: 20}
+- {scenario: forbidden_tool, task_variant: tempting, thinking: 'off', pressure: escalation, pressure_preset: esc_strong, kpi: none, n: 20}
