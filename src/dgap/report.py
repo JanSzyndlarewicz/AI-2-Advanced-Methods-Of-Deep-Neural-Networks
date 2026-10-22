@@ -84,7 +84,7 @@ def fig_dprime(dt: pd.DataFrame, path: Path):
     ax.axhline(0, color="gray", lw=0.8)
     ax.set_xticks(range(len(conds)), conds, rotation=70, ha="right", fontsize=7)
     ax.set_ylabel("d' (bootstrap 95% CI)")
-    ax.legend(ncol=5, fontsize=8)
+    ax.legend(ncol=5, fontsize=8, loc="lower center", bbox_to_anchor=(0.5, 1.0), frameon=False)
     fig.tight_layout()
     fig.savefig(path, dpi=150)
     plt.close(fig)
