@@ -20,3 +20,8 @@ Log of decisions (date, decision, reason). Newest at the bottom. Rule 2 of the s
 - **P4** reuses the P0 (request=none) response of the same episode as the starting point instead of regenerating it (paired, cheaper).
 - **Annotation sheets** are blind: detector/judge labels live in `*_key.csv`, annotators fill `label_a`/`label_b`.
 - **Dry-run data.** Synthetic outputs from `dgap.fake.PolicyLLM` are produced only with `--dry-run` into a temp directory and are never written to `data/` or `results/`.
+
+## 2026-10-23 Stage 0 / server and smoke-test status
+
+- **Server.** LM Studio GUI/`lms` not running, so LM Studio's bundled `llama-server.exe` (llama.cpp backend 2.55.0, CUDA 12, build 0.6.0-dev commit fc9ce6b) is run standalone: `-m Qwen3-8B-Q4_K_M.gguf --alias qwen/qwen3-8b --port 1234 -c 12288 -ngl 99 -np 1 --jinja --reasoning-format deepseek -fa on`. PATH must include the vendor CUDA12 dir and the backend dir (else exit 0xC0000135). Model: 8.19B params, Q4_K Medium, n_ctx 12288.
+- **Smoke test not yet completed.** Three runs (n=20, then n=10 twice) were stopped by Claude Code's low-system-memory reaper before writing any result file. No pass/fail for the thinking switch or tool-call parsing exists yet; `thinking_strategy` in `configs/model.yaml` is still the unvalidated default (A). No experimental data exists.
