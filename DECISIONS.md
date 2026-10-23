@@ -25,3 +25,9 @@ Log of decisions (date, decision, reason). Newest at the bottom. Rule 2 of the s
 
 - **Server.** LM Studio GUI/`lms` not running, so LM Studio's bundled `llama-server.exe` (llama.cpp backend 2.55.0, CUDA 12, build 0.6.0-dev commit fc9ce6b) is run standalone: `-m Qwen3-8B-Q4_K_M.gguf --alias qwen/qwen3-8b --port 1234 -c 12288 -ngl 99 -np 1 --jinja --reasoning-format deepseek -fa on`. PATH must include the vendor CUDA12 dir and the backend dir (else exit 0xC0000135). Model: 8.19B params, Q4_K Medium, n_ctx 12288.
 - **Smoke test not yet completed.** Three runs (n=20, then n=10 twice) were stopped by Claude Code's low-system-memory reaper before writing any result file. No pass/fail for the thinking switch or tool-call parsing exists yet; `thinking_strategy` in `configs/model.yaml` is still the unvalidated default (A). No experimental data exists.
+
+## 2026-10-23 Stage 0 result: smoke test PASSED (strategy A)
+
+- **Root cause of the earlier failures.** The first GGUF came from a resumed download and was corrupt (SHA-256 5b51ecdf... vs published d98cdcbd...5785; size 5,111,362,368 vs 5,027,783,488 B). The server produced `????...` until max_tokens, which invalidated three smoke runs (and the earlier "4,000+ reasoning tokens" observation). The file was deleted and re-downloaded; the SHA-256 now matches Hugging Face. `-fa on` was not at fault.
+- **Result (n=20 per mode, `results/smoke_model.csv`, `smoke_model_summary.csv`).** `A_template_kwargs`: tool-call parse rate off 1.00 / on 1.00 (threshold 0.85); off reasoning-free 1.00; on reasoning present 1.00 (threshold 0.90); mean completion tokens off 23.0, on 211.55. Strategy A selected; `thinking_strategy: A_template_kwargs` in `configs/model.yaml`.
+- **Server concurrency.** `llama-server` runs with `-np 1`, so requests are served one at a time; the pilot runs with `--workers 1`.
