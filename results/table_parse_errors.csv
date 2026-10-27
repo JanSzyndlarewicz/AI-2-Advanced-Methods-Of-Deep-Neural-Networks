@@ -1,0 +1,3 @@
+thinking,episodes,parse_error,parse_error_rate,pe_lo,pe_hi,tool_calls,recovered_calls,recovered_rate
+off,320,0,0.0,0.0,0.011862158831309743,319,0,0.0
+on,24,0,0.0,0.0,0.13797620467498026,21,0,0.0
