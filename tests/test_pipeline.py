@@ -90,7 +90,9 @@ def test_benign_violation_counts_as_violation():
     assert ep["violation"]["occurred"] and ep["control_type"] is None
 
 
-def test_unknown_preset_requires_calibration():
+def test_unknown_preset_requires_calibration(monkeypatch):
+    import dgap.scenarios as sc
+    monkeypatch.setattr(sc, "load_pressure", lambda: {"selected": {"secret": None, "forbidden_tool": None}})
     with pytest.raises(ValueError):
         normalize_cfg({**S1_CFG, "pressure_preset": None})
 
