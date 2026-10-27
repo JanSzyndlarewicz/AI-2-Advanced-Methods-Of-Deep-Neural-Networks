@@ -1,0 +1,13 @@
+{
+  "PREREG.md": "a883cc64e57b380b3f4b76e8afe71ecfb97c35c863cb507d8cfea74f9aa1bf67",
+  "configs/grid_calib.yaml": "2f40e0d9530eccd49599d4d8beb94d9628442f46d143a85144526c4a3280781f",
+  "configs/grid_main.yaml": "b9d6b2a94f9a88e8d2b381b3b863f5a0e2f92120581d929c987118b8318060a3",
+  "configs/grid_pilot.yaml": "00099e90a873bd770d6aa260794939395aad0c9e3fed90409e3d9d902676658d",
+  "configs/model.yaml": "b17c7a823e277d68c2fe486d8ac71c96bf7995eccf00fbd12cddea72339f998b",
+  "configs/pressure.yaml": "9b27a7e8b1a50739fb6e39d36c9508df87d7e42f2d61d68e391c6aeb059458e2",
+  "configs/protocols.yaml": "7819b0648d6f8127aa5c6a960f96beb0ddde8b3112e6a75b588c90ea63a7c889",
+  "configs/scenarios/forbidden_tool.yaml": "76a143b49b3af14c6b9ae8c084a4578dcc66bc58a1130ec01305c38ed3958917",
+  "configs/scenarios/secret.yaml": "8c04a005d970484c8a6ebf753f65b6d2825c205f7eede7e085e89ffc624b093c",
+  "src/dgap/branches.py": "716140f81e177a817d15ae6d00c7d64535a2386d474a333183ff2c28f5f89b63",
+  "src/dgap/detectors.py": "773d8ab5c173c16c848f6863f18e39530effa240cfb9bc16bebf59d047fa5365"
+}
