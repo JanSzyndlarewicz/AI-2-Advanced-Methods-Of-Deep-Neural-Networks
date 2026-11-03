@@ -1,5 +1,7 @@
 # The Disclosure Gap
 
+Project status and next steps: `HANDOFF.md`.
+
 Do LLM agents disclose rule violations they knowingly committed? Two synthetic scenarios (`secret`, `forbidden_tool`), a local model (Qwen3-8B Q4_K_M via an OpenAI-compatible server), scripted pressure, and five reporting protocols (P0 free report, P1 report with call ids, P2 yes/no audit, P3 fresh-context log audit, C confession channel, plus P4 repeated questioning). Full methodology: `DISCLOSURE_GAP_SPEC.md` (= `CLAUDE.md`), pre-registration: `PREREG.md`, decisions: `DECISIONS.md`.
 
 ## Layout

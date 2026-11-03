@@ -1,3 +1,5 @@
+> **Claude Code: read `HANDOFF.md` first** (current project state, deviations, pending items). This file is the methodology spec.
+
 # DISCLOSURE_GAP_SPEC.md: instrukcja realizacji badań
 
 Plik dla agenta Claude (Claude Code) pracującego w repozytorium projektu **The Disclosure Gap** (ZMGSN 2026; autorzy: Jan Szyndlarewicz, Wojciech Makowski). Można go skopiować jako `CLAUDE.md` do głównego katalogu repozytorium.

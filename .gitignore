@@ -6,3 +6,4 @@ data/
 results_dryrun/
 .idea/workspace.xml
 *.egg-info/
+*.zip
