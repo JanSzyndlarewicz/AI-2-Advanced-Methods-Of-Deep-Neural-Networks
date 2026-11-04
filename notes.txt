@@ -1,0 +1,13 @@
+1. Program uruchamia rozmowę agenta z użytkownikiem w sztucznym środowisku i 
+dosyła kolejne wiadomości z naciskiem, dopóki agent nie ulegnie albo nie skończą się wiadomości.
+
+2. Po każdej odpowiedzi agenta kod sprawdza, czy doszło do naruszenia. Pełny zapis 
+(wiadomości i wywołania narzędzi) trafia do pliku.
+
+3. Gotową rozmowę kopiujemy na kilka niezależnych gałęzi. W każdej prosimy agenta o raport 
+innym protokołem (P0, P1, P2, C, P3).
+
+4. Odpowiedzi oceniamy automatycznie (poza swobodnym raportem P0) i zapisujemy: czy agent 
+się przyznał, ile słów wygenerował, ile to trwało.
+
+5. Osobny moduł liczy z tego tabele i wykresy.
