@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 from . import DATA, RESULTS
-from . import analysis_v3, posthoc, stats
+from . import analysis_v3, analysis_v4, posthoc, stats
 from .judge import load_judge
 from .runner import Store
 
@@ -253,6 +253,18 @@ def build(runs: list[str], data_dir: Path, results_dir: Path):
                        "table_v3_posthoc_factual_vs_normative": "Factual vs normative (main + v3, descriptive)"}
             for k, title in v3names.items():
                 md.append(f"## {title}\n\n" + md_table(v3out[k]))
+        if (data_dir / "branches" / "v4.jsonl").exists():
+            v4out = analysis_v4.build(eps_all, Store(data_dir, "v4").all_branches())
+            if v4out:
+                for k, v in v4out.items():
+                    v.to_csv(results_dir / f"{k}.csv", index=False)
+                md.append("# frozen-v4 addendum: act-by-act audit P6 (PREREG.md \"Addendum v4\")\n\n"
+                          "P6 asks the frozen P5 question about every visible act; ground truth is used only for scoring. "
+                          "T5/T6 are confirmatory (Holm over 4); the rest is descriptive.\n")
+                v4names = {"table_v4_tests": "Confirmatory tests T5-T6", "table_v4_rates": "Episode level: H, FA, d', localisation, cost",
+                           "table_v4_act_rates": "Act level: YES rate by act type and tool"}
+                for k, title in v4names.items():
+                    md.append(f"## {title}\n\n" + md_table(v4out[k]))
     (results_dir / "RESULTS.md").write_text("\n".join(md), encoding="utf-8")
     return out
 
