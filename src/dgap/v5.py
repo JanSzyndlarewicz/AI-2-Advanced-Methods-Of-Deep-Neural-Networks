@@ -112,7 +112,7 @@ def main(argv=None):
         if problems or "src/dgap/scenarios_v5.py" not in open(CONFIGS / "frozen.lock", encoding="utf-8").read():
             raise SystemExit("REFUSING to run v5: frozen-v5 lock missing or not matching:\n  " + "\n  ".join(problems))
         llm = OpenAIClient(model_cfg)
-        served = [m["id"] for m in llm.client.models.list().data] if hasattr(llm, "client") else []
+        served = [m.id for m in llm.client.models.list().data] if hasattr(llm, "client") else []
         if served and model_cfg["model_id"] not in served:
             raise SystemExit(f"server serves {served}, expected {model_cfg['model_id']}")
     run_model(grid, model, llm, model_cfg, Store(Path(a.data_dir), RUN))
