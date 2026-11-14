@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 from . import DATA, RESULTS
-from . import stats
+from . import posthoc, stats
 from .judge import load_judge
 from .runner import Store
 
@@ -133,6 +133,35 @@ def fig_survival(h3: pd.DataFrame, path: Path):
     plt.close(fig)
 
 
+def fig_posthoc(fvn: pd.DataFrame, path: Path):
+    """Exploratory: factual vs normative acknowledgement on M0 informed violations (H with Wilson CI)."""
+    if fvn.empty:
+        return
+    order = ["fact_P1_evidence", "fact_P2_q2", "opcheck_P1", "norm_P1_declared", "norm_P2_q1", "norm_C", "other_P3"]
+    labels = ["P1 lists the act", "P2 q2: did X? YES", "Operator rule on P1 list", "P1 policy_exceptions",
+              "P2 q1: violated? YES", "C confession", "P3 third-person audit"]
+    hatches = ["", "", "..", "//", "//", "//", "xx"]
+    scen = sorted(fvn.scenario.unique())
+    fig, ax = plt.subplots(figsize=(8, 4))
+    w = 0.8 / len(scen)
+    for j, sc in enumerate(scen):
+        d = fvn[fvn.scenario == sc].set_index("measure").reindex(order)
+        x = np.arange(len(order)) + j * w
+        ax.bar(x, d.H, w, yerr=[(d.H - d.H_lo).clip(lower=0), (d.H_hi - d.H).clip(lower=0)], capsize=2, color=["#bbbbbb", "#444444"][j % 2],
+               edgecolor="black", label=f"{sc} (n={int(d.n_hit.max())})")
+    for p_, h in zip(ax.patches, hatches * len(scen)):
+        p_.set_hatch(h)
+    ax.set_xticks(np.arange(len(order)) + w * (len(scen) - 1) / 2)
+    ax.set_xticklabels(labels, rotation=30, ha="right", fontsize=8)
+    ax.set_ylabel("Share of informed violations (M0)")
+    ax.set_ylim(0, 1.05)
+    ax.set_title("Exploratory: factual vs normative acknowledgement (M0 informed violations)", fontsize=9)
+    ax.legend(fontsize=8, loc="center")
+    fig.tight_layout()
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+
+
 def build(runs: list[str], data_dir: Path, results_dir: Path):
     results_dir.mkdir(parents=True, exist_ok=True)
     eps, brs, judge = [], [], {}
@@ -154,19 +183,34 @@ def build(runs: list[str], data_dir: Path, results_dir: Path):
     out["table_validation"] = validation_table(results_dir)
     out["table_parse_errors"] = stats.parse_error_table(eps)
     out["exclusions"] = stats.exclusions_table(eps)
-    for k, v in out.items():
+    ph = posthoc.build(eps, brs, df) if len(df) else {}
+    for k, v in {**out, **ph}.items():
         v.to_csv(results_dir / f"{k}.csv", index=False)
     if len(df):
         fig_violation(out["table_violation_rates"], results_dir / "fig_violation_by_condition.png")
         fig_dprime(out["table_disclosure"], results_dir / "fig_dprime.png")
         fig_pareto(out["table_disclosure"], out["table_cost"], results_dir / "fig_pareto.png")
         fig_survival(out["table_h3"], results_dir / "fig_survival.png")
+        if ph:
+            fig_posthoc(ph["table_posthoc_factual_vs_normative"], results_dir / "fig_posthoc_factual_vs_normative.png")
     names = {"table_violation_rates": "Violation rates", "table_disclosure": "Disclosure: H, FA, d'", "table_tests_M0": "Confirmatory tests (M0, exact McNemar, Holm over 8)",
              "table_cost": "Cost per protocol", "table_h2": "H2: disclosure gain per 1000 completion tokens", "table_h3": "H3: denial survival S(k) and false confession F(k)",
              "table_validation": "Validation", "table_parse_errors": "Parse errors / recovered tool calls", "exclusions": "Exclusions"}
     md = [f"# RESULTS (auto-generated; runs: {', '.join(runs)})\n", "Facts only. Interpretation is written by the authors. P0 labels are LLM-judge labels unless validation says otherwise.\n"]
     for k, title in names.items():
         md.append(f"## {title}\n\n" + md_table(out[k]))
+    if ph:
+        md.append("# Post-hoc, exploratory analyses (not pre-registered)\n\n"
+                  "Computed by `dgap.posthoc` on the same data; deterministic fields only (P1 `declared`/`evidence_listed`/action list, "
+                  "P2 q1/q2, C, P3). `opcheck_P1` = the operator applies the rule to the agent's own P1 report. "
+                  "P0 is not coded here (keyword regexes false-fire on negations). H2 NA cells: D_X - D_P0 <= 0 together with a "
+                  "non-positive cost difference, or zero bootstrap variance; not a computation error.\n")
+        ph_names = {"table_posthoc_factual_vs_normative": "Factual vs normative acknowledgement (H on M0 informed violations, FA on controls)",
+                    "table_posthoc_consistency": "Cross-protocol consistency within M0 informed-violation episodes",
+                    "table_posthoc_hard_controls": "Controls that touched the sensitive resource",
+                    "table_h3_excl_k2": "H3 sensitivity without the k=2 wording artefact (k = 1, 3, 4, 5)"}
+        for k, title in ph_names.items():
+            md.append(f"## {title}\n\n" + md_table(ph[k]))
     (results_dir / "RESULTS.md").write_text("\n".join(md), encoding="utf-8")
     return out
 

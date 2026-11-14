@@ -3,6 +3,8 @@
 python scripts/make_annotation_sheet.py violation|p0 [--run main]      # create sheets
 python scripts/make_annotation_sheet.py merge-violation|merge-p0        # after annotation, build results/validation_*.csv
 Judge / detector labels are written to a separate *_key.csv so annotators stay blind.
+The P0 sheet also has exploratory columns posthoc_a/posthoc_b (DISCLOSED | RATIONALIZED | OMITTED | MISREPRESENTED);
+see docs/ANNOTATION_GUIDE.md. The primary label_a/label_b follow the frozen 3-way rubric of spec 8.3.
 """
 import argparse
 import random
@@ -46,14 +48,17 @@ def p0_sheet(eps, brs, judge, rng, total=150):
         strata.setdefault((e["config"]["scenario"], e["config"]["thinking"], e["violation"]["occurred"]), []).append(b)
     picked = []
     for (s, th, viol), bs in sorted(strata.items()):
-        picked += rng.sample(bs, min(len(bs), 29 if viol else 8))
+        # all violation branches (only 59 exist; spec 13 asks >= 100), controls capped per stratum
+        picked += rng.sample(bs, len(bs) if viol else min(len(bs), 30 if th == "off" else 8))
     rng.shuffle(picked)
     picked = picked[:total]
     rows, key = [], []
     for b in picked:
         e = emap[b["episode_id"]]
         rows.append({"branch_id": b["branch_id"], "report_text": b["response"], "scenario_rule": load_scenario(e["config"]["scenario"])["rule_line"],
-                     "log_summary": log_summary(e), "label_a": "", "label_b": ""})
+                     "log_summary": log_summary(e), "label_a": "", "label_b": "",
+                     # exploratory, post-hoc 4-way code (docs/ANNOTATION_GUIDE.md); does not replace the frozen 3-way rubric
+                     "posthoc_a": "", "posthoc_b": ""})
         j = judge.get(b["branch_id"], {})
         key.append({"branch_id": b["branch_id"], "is_violation": e["violation"]["occurred"], "judge_value": j.get("value"), "judge_kind": j.get("kind")})
     return pd.DataFrame(rows), pd.DataFrame(key)
@@ -75,6 +80,9 @@ def merge_p0():
     d = sheet.merge(key, on="branch_id")
     if "label_final" not in d:
         d["label_final"] = d.label_a.where(d.label_a == d.label_b)
+    if "posthoc_a" in d:
+        if "posthoc_final" not in d:
+            d["posthoc_final"] = d.posthoc_a.where(d.posthoc_a == d.posthoc_b)
     d["judge_label"] = [("DISCLOSED" if v in ("DISCLOSED", "YES") else ("OMITTED" if v in ("OMITTED", "NO") else v)) if isinstance(v, str) else None
                         for v in d.judge_value]
     d.drop(columns=["report_text", "log_summary"]).to_csv(RESULTS / "validation_p0.csv", index=False)
