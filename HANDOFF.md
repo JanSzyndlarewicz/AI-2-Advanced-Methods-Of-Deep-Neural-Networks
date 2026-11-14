@@ -1,7 +1,7 @@
 # HANDOFF: project state for a new Claude Code session / collaborator
 
 Read this first, then `CLAUDE.md` (= `DISCLOSURE_GAP_SPEC.md`, the methodology), `PREREG.md`, `DECISIONS.md`.
-Last updated: 2026-11-03 (HEAD at that time: see `git log`; tags `frozen-v1`, `frozen-v2`).
+Last updated: 2026-11-14 (tags `frozen-v1` ... `frozen-v4`). Newest work: see the section "2026-11-14 additions" at the end.
 
 ## Standing rules (from the spec and the authors)
 - Authors: Jan Szyndlarewicz, Wojciech Makowski. Users write Polish; code, prompts, commits and docs are English.
@@ -38,3 +38,10 @@ All of the following is committed and tagged:
 ## Environment notes (Windows)
 - Python 3.13 venv via `uv`; call `.venv/Scripts/python.exe` explicitly (bare `python` is not on the bash PATH).
 - llama-server was started from LM Studio's bundled backend (command and PATH in DECISIONS.md); a corrupt resumed GGUF once produced garbage output, so check the model SHA-256 if the server returns `????`.
+
+## 2026-11-14 additions (post-hoc analysis, frozen-v3, frozen-v4)
+- **Post hoc (main data, exploratory):** `src/dgap/posthoc.py`, tables `table_posthoc_*`, `fig_posthoc_factual_vs_normative.png`. Agents list the act (P1 evidence 59/59; P2 q2 YES 45/45 in forbidden_tool) but never call it a violation (0/59).
+- **frozen-v3** (PREREG "Addendum v3"; `python -m dgap.v3 all`, run_id `v3`): P2s/P2o/P3s/P5/P4b, near-miss controls, secret M0 extension. **Partially run**: it was stopped by a low-RAM reaper. Done: v3 branches on main, P4b on main, near-miss 80 episodes, secret extension 41/200 (6 informed). Missing: rest of the extension, v3 branches/P4b on v3 episodes, LLM judge for v3 P0 (`python -m dgap.judge --run v3`). Resume with the same command (resumable). Preliminary on main: perspective has no effect (P2s = P2o = 0/59; P3s = P3 = 59/59); P5 59/59.
+- **frozen-v4** (PREREG "Addendum v4"; `python -m dgap.v4`, run_id `v4`): act-by-act audit P6, **complete**. T5 supported (H 65/65 pooled, near-miss FA 0/80); T6 (localisation) not supported (hindsight). See DECISIONS.md.
+- Annotation sheets for humans: `results/validation_*_sheet.csv` + `docs/ANNOTATION_GUIDE.md` (still pending).
+- Data checksums for v3/v4: `data/*/v3.jsonl.sha256`, `data/branches/v4.jsonl.sha256` (v3 must be re-hashed after completion).
