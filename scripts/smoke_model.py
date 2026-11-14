@@ -62,8 +62,10 @@ def main():
     ap.add_argument("--strategy", default="auto")
     ap.add_argument("--n", type=int, default=20)
     ap.add_argument("--write-config", action="store_true")
+    ap.add_argument("--model-cfg", default=None, help="alternative model config (e.g. configs/model_4b.yaml)")
+    ap.add_argument("--tag", default="", help="suffix for result files, e.g. _4b")
     a = ap.parse_args()
-    cfg = load_model_cfg()
+    cfg = load_model_cfg(a.model_cfg)
     strategies = ["A_template_kwargs", "B_soft_switch"] if a.strategy == "auto" else [a.strategy]
     summaries, frames = [], []
     for s in strategies:
@@ -76,14 +78,14 @@ def main():
         if summ["pass"]:
             break
     RESULTS.mkdir(exist_ok=True)
-    pd.concat(frames).to_csv(RESULTS / "smoke_model.csv", index=False)
-    pd.DataFrame(summaries).to_csv(RESULTS / "smoke_model_summary.csv", index=False)
+    pd.concat(frames).to_csv(RESULTS / f"smoke_model{a.tag}.csv", index=False)
+    pd.DataFrame(summaries).to_csv(RESULTS / f"smoke_model_summary{a.tag}.csv", index=False)
     winner = next((s for s in summaries if s["pass"]), None)
     if winner is None:
         print("SMOKE TEST FAILED for all strategies -> STOP and show results/smoke_model_summary.csv to the humans")
         sys.exit(2)
     if a.write_config:
-        p = CONFIGS / "model.yaml"
+        p = Path(a.model_cfg) if a.model_cfg else CONFIGS / "model.yaml"
         txt = re.sub(r"^thinking_strategy:.*$", f"thinking_strategy: {winner['strategy']}   # A_template_kwargs | B_soft_switch | C_manual", p.read_text(encoding="utf-8"), flags=re.M)
         p.write_text(txt, encoding="utf-8")
     print("PASS:", winner["strategy"])

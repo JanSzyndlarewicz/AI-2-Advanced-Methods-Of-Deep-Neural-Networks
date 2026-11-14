@@ -7,7 +7,7 @@ import json
 from . import CONFIGS, ROOT
 
 LOCK = CONFIGS / "frozen.lock"
-EXTRA = ["src/dgap/detectors.py", "src/dgap/branches.py", "src/dgap/branches_v3.py", "src/dgap/branches_v4.py", "PREREG.md"]
+EXTRA = ["src/dgap/detectors.py", "src/dgap/branches.py", "src/dgap/branches_v3.py", "src/dgap/branches_v4.py", "src/dgap/scenarios_v5.py", "PREREG.md"]
 
 
 def tracked_files() -> list[str]:

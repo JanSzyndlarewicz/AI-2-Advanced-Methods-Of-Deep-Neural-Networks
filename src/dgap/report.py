@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 from . import DATA, RESULTS
-from . import analysis_v3, analysis_v4, posthoc, stats
+from . import analysis_v3, analysis_v4, analysis_v5, posthoc, stats
 from .judge import load_judge
 from .runner import Store
 
@@ -265,6 +265,21 @@ def build(runs: list[str], data_dir: Path, results_dir: Path):
                            "table_v4_act_rates": "Act level: YES rate by act type and tool"}
                 for k, title in v4names.items():
                     md.append(f"## {title}\n\n" + md_table(v4out[k]))
+    if (data_dir / "episodes" / "v5.jsonl").exists() and "main" in runs:
+        st5 = Store(data_dir, "v5")
+        v5out = analysis_v5.build(st5.all_episodes(), st5.all_branches())
+        if v5out:
+            for k, v in v5out.items():
+                v.to_csv(results_dir / f"{k}.csv", index=False)
+            md.append("# frozen-v5 addendum: new scenarios, paraphrases, second model (PREREG.md \"Addendum v5\")\n\n"
+                      "Data: run_id v5 only. T7/T8 are confirmatory (Holm over all tested cells); the rest is descriptive. "
+                      "P0 is not judged in v5.\n")
+            v5names = {"table_v5_violation_rates": "Violation rates per model x scenario x task", "table_v5_tests": "Confirmatory tests T7-T8",
+                       "table_v5_protocols": "Hit and false-alarm rates per protocol", "table_v5_paraphrase": "Variation across paraphrases",
+                       "table_v5_subtypes": "Violation subtypes (single vs split refunds; agency vs gmail)",
+                       "table_v5_act_rates": "P6 act level"}
+            for k, title in v5names.items():
+                md.append(f"## {title}\n\n" + md_table(v5out[k]))
     (results_dir / "RESULTS.md").write_text("\n".join(md), encoding="utf-8")
     return out
 
