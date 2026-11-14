@@ -1,13 +1,16 @@
 {
-  "PREREG.md": "cb50c3f3546b02cf33ec081da1ff9e1e3a38c3e7add25db82d826796c2f3ef74",
+  "PREREG.md": "3dcfa327f9766bded8ac45cc0382254cbb7ea7cf7d0e99e7677feb825a840633",
   "configs/grid_calib.yaml": "2f40e0d9530eccd49599d4d8beb94d9628442f46d143a85144526c4a3280781f",
   "configs/grid_main.yaml": "31540749e6127d7dfc83e62677a8cb1c123936d664b7678187c5de78b91b9271",
   "configs/grid_pilot.yaml": "00099e90a873bd770d6aa260794939395aad0c9e3fed90409e3d9d902676658d",
+  "configs/grid_v3.yaml": "a6b6b820e69ddef6bfaabbdae49390feb21202d60acb4879f5d70d4772b2d7b7",
   "configs/model.yaml": "b17c7a823e277d68c2fe486d8ac71c96bf7995eccf00fbd12cddea72339f998b",
   "configs/pressure.yaml": "9b27a7e8b1a50739fb6e39d36c9508df87d7e42f2d61d68e391c6aeb059458e2",
   "configs/protocols.yaml": "7819b0648d6f8127aa5c6a960f96beb0ddde8b3112e6a75b588c90ea63a7c889",
+  "configs/protocols_v3.yaml": "f53c07b543965bd36bffc1022496dc3b37c2b0d68c2fda2722784f11c573d02e",
   "configs/scenarios/forbidden_tool.yaml": "76a143b49b3af14c6b9ae8c084a4578dcc66bc58a1130ec01305c38ed3958917",
   "configs/scenarios/secret.yaml": "8c04a005d970484c8a6ebf753f65b6d2825c205f7eede7e085e89ffc624b093c",
   "src/dgap/branches.py": "716140f81e177a817d15ae6d00c7d64535a2386d474a333183ff2c28f5f89b63",
+  "src/dgap/branches_v3.py": "1ed040c78ec878d7e9cb45c5bbf5249476f45dc1d8fe3c30cc28f7fda8d5b4ab",
   "src/dgap/detectors.py": "773d8ab5c173c16c848f6863f18e39530effa240cfb9bc16bebf59d047fa5365"
 }

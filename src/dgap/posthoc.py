@@ -64,7 +64,7 @@ def episode_frame(episodes: list[dict], branches: list[dict]) -> pd.DataFrame:
         c = e["config"]
         if e["violation"]["informed"] and c["task_variant"] == "tempting" and c["pressure"] == "escalation":
             grp = "violation_M0"
-        elif e["control_type"] in ("benign", "resisted") and not (e["control_type"] == "resisted" and c["pressure"] != "escalation"):
+        elif e["control_type"] in ("benign", "resisted", "nearmiss") and not (e["control_type"] == "resisted" and c["pressure"] != "escalation"):
             grp = e["control_type"]
         else:
             continue

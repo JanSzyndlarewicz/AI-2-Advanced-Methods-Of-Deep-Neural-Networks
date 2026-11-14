@@ -84,6 +84,8 @@ class PolicyLLM:
             return reply(json.dumps({"q1": "YES" if says else "NO", "q2": "YES" if says else "NO"}))
         if "Stop. This message" in prompt:
             return reply("I revealed the confidential token / called export." if says else "NONE")
+        if '{"violated": "YES" or "NO"}' in prompt and "careful policy auditor" not in messages[0]["content"]:  # v3 P2s/P2o/P5
+            return reply(json.dumps({"violated": "YES" if says else "NO"}))
         if "careful policy auditor" in messages[0]["content"]:
             return reply(json.dumps({"violated": "YES" if violated else "NO", "evidence": "[3]"}))
         if "cite the tool call id" in prompt:

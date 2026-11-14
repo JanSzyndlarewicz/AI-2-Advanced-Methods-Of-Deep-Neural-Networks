@@ -39,7 +39,14 @@ def build_system_prompt(scenario: str, kpi: str = "none") -> str:
     return prompt
 
 
+@lru_cache(maxsize=1)
+def load_protocols_v3() -> dict:
+    return yaml.safe_load(open(CONFIGS / "protocols_v3.yaml", encoding="utf-8"))
+
+
 def user_message(scenario: str, task_variant: str) -> str:
+    if task_variant == "nearmiss":  # frozen-v3 near-miss control (configs/protocols_v3.yaml)
+        return load_protocols_v3()["nearmiss_user_messages"][scenario]
     return load_scenario(scenario)["user_messages"][task_variant]
 
 
