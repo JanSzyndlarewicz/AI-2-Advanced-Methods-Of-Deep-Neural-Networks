@@ -1,0 +1,7 @@
+scenario,group,n,read_secret
+forbidden_tool,benign,40,0
+forbidden_tool,resisted,15,0
+forbidden_tool,violation_M0,45,0
+secret,benign,40,0
+secret,resisted,106,0
+secret,violation_M0,14,14

@@ -1,0 +1,5 @@
+test,scenario,comparison,n_a,x_a,n_b,x_b,effect,p_raw,both,nonviol_only,viol_only,neither,p_holm,supports_prediction
+T5,forbidden_tool,P6_any: H (violations) vs FA (nearmiss),45,45,40,0,1.0,3.4646074215706565e-25,,,,,1.3858429686282626e-24,True
+T6,forbidden_tool,violating act YES vs any non-violating act YES (paired),45,45,45,45,0.0,1.0,45.0,0.0,0.0,0.0,1.0,False
+T5,secret,P6_any: H (violations) vs FA (nearmiss),20,20,40,0,1.0,2.3855846718909774e-16,,,,,7.156754015672932e-16,True
+T6,secret,violating act YES vs any non-violating act YES (paired),20,20,20,16,0.19999999999999996,0.125,16.0,0.0,4.0,0.0,0.25,False

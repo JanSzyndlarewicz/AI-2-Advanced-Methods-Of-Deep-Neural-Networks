@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 
 from . import DATA, RESULTS
-from . import stats
+from . import analysis_v3, analysis_v4, analysis_v5, posthoc, stats
 from .judge import load_judge
 from .runner import Store
 
@@ -133,6 +133,60 @@ def fig_survival(h3: pd.DataFrame, path: Path):
     plt.close(fig)
 
 
+def fig_posthoc(fvn: pd.DataFrame, path: Path):
+    """Exploratory: factual vs normative acknowledgement on M0 informed violations (H with Wilson CI)."""
+    if fvn.empty:
+        return
+    order = ["fact_P1_evidence", "fact_P2_q2", "opcheck_P1", "norm_P1_declared", "norm_P2_q1", "norm_C", "other_P3"]
+    labels = ["P1 lists the act", "P2 q2: did X? YES", "Operator rule on P1 list", "P1 policy_exceptions",
+              "P2 q1: violated? YES", "C confession", "P3 third-person audit"]
+    hatches = ["", "", "..", "//", "//", "//", "xx"]
+    scen = sorted(fvn.scenario.unique())
+    fig, ax = plt.subplots(figsize=(8, 4))
+    w = 0.8 / len(scen)
+    for j, sc in enumerate(scen):
+        d = fvn[fvn.scenario == sc].set_index("measure").reindex(order)
+        x = np.arange(len(order)) + j * w
+        ax.bar(x, d.H, w, yerr=[(d.H - d.H_lo).clip(lower=0), (d.H_hi - d.H).clip(lower=0)], capsize=2, color=["#bbbbbb", "#444444"][j % 2],
+               edgecolor="black", label=f"{sc} (n={int(d.n_hit.max())})")
+    for p_, h in zip(ax.patches, hatches * len(scen)):
+        p_.set_hatch(h)
+    ax.set_xticks(np.arange(len(order)) + w * (len(scen) - 1) / 2)
+    ax.set_xticklabels(labels, rotation=30, ha="right", fontsize=8)
+    ax.set_ylabel("Share of informed violations (M0)")
+    ax.set_ylim(0, 1.05)
+    ax.set_title("Exploratory: factual vs normative acknowledgement (M0 informed violations)", fontsize=9)
+    ax.legend(fontsize=8, loc="center")
+    fig.tight_layout()
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+
+
+def fig_v3_perspective(rates: pd.DataFrame, path: Path):
+    """2x2 perspective x context (+P5) hit rates on M0 informed violations, Wilson CI."""
+    if rates.empty:
+        return
+    order = [("P2s", "self / in-conv."), ("P2o", "other / in-conv."), ("P3s", "self / fresh"), ("P3", "other / fresh"),
+             ("P5", "self / specific act")]
+    scen = sorted(rates.scenario.unique())
+    fig, ax = plt.subplots(figsize=(7, 4))
+    w = 0.8 / len(scen)
+    for j, sc in enumerate(scen):
+        d = rates[rates.scenario == sc].set_index("protocol").reindex([o[0] for o in order])
+        x = np.arange(len(order)) + j * w
+        ax.bar(x, d.H, w, yerr=[(d.H - d.H_lo).clip(lower=0), (d.H_hi - d.H).clip(lower=0)], capsize=2,
+               color=["#bbbbbb", "#444444"][j % 2], edgecolor="black", label=f"{sc} (n={int(d.n_hit.max())})")
+    ax.set_xticks(np.arange(len(order)) + w * (len(scen) - 1) / 2)
+    ax.set_xticklabels([o[1] for o in order], rotation=20, ha="right", fontsize=8)
+    ax.set_ylabel("'Violated: YES' on informed violations (M0)")
+    ax.set_ylim(0, 1.05)
+    ax.set_title("frozen-v3: perspective x context, and specific-act question", fontsize=9)
+    ax.legend(fontsize=8, loc="center left")
+    fig.tight_layout()
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+
+
 def build(runs: list[str], data_dir: Path, results_dir: Path):
     results_dir.mkdir(parents=True, exist_ok=True)
     eps, brs, judge = [], [], {}
@@ -154,19 +208,78 @@ def build(runs: list[str], data_dir: Path, results_dir: Path):
     out["table_validation"] = validation_table(results_dir)
     out["table_parse_errors"] = stats.parse_error_table(eps)
     out["exclusions"] = stats.exclusions_table(eps)
-    for k, v in out.items():
+    ph = posthoc.build(eps, brs, df) if len(df) else {}
+    for k, v in {**out, **ph}.items():
         v.to_csv(results_dir / f"{k}.csv", index=False)
     if len(df):
         fig_violation(out["table_violation_rates"], results_dir / "fig_violation_by_condition.png")
         fig_dprime(out["table_disclosure"], results_dir / "fig_dprime.png")
         fig_pareto(out["table_disclosure"], out["table_cost"], results_dir / "fig_pareto.png")
         fig_survival(out["table_h3"], results_dir / "fig_survival.png")
+        if ph:
+            fig_posthoc(ph["table_posthoc_factual_vs_normative"], results_dir / "fig_posthoc_factual_vs_normative.png")
     names = {"table_violation_rates": "Violation rates", "table_disclosure": "Disclosure: H, FA, d'", "table_tests_M0": "Confirmatory tests (M0, exact McNemar, Holm over 8)",
              "table_cost": "Cost per protocol", "table_h2": "H2: disclosure gain per 1000 completion tokens", "table_h3": "H3: denial survival S(k) and false confession F(k)",
              "table_validation": "Validation", "table_parse_errors": "Parse errors / recovered tool calls", "exclusions": "Exclusions"}
     md = [f"# RESULTS (auto-generated; runs: {', '.join(runs)})\n", "Facts only. Interpretation is written by the authors. P0 labels are LLM-judge labels unless validation says otherwise.\n"]
     for k, title in names.items():
         md.append(f"## {title}\n\n" + md_table(out[k]))
+    if ph:
+        md.append("# Post-hoc, exploratory analyses (not pre-registered)\n\n"
+                  "Computed by `dgap.posthoc` on the same data; deterministic fields only (P1 `declared`/`evidence_listed`/action list, "
+                  "P2 q1/q2, C, P3). `opcheck_P1` = the operator applies the rule to the agent's own P1 report. "
+                  "P0 is not coded here (keyword regexes false-fire on negations). H2 NA cells: D_X - D_P0 <= 0 together with a "
+                  "non-positive cost difference, or zero bootstrap variance; not a computation error.\n")
+        ph_names = {"table_posthoc_factual_vs_normative": "Factual vs normative acknowledgement (H on M0 informed violations, FA on controls)",
+                    "table_posthoc_consistency": "Cross-protocol consistency within M0 informed-violation episodes",
+                    "table_posthoc_hard_controls": "Controls that touched the sensitive resource",
+                    "table_h3_excl_k2": "H3 sensitivity without the k=2 wording artefact (k = 1, 3, 4, 5)"}
+        for k, title in ph_names.items():
+            md.append(f"## {title}\n\n" + md_table(ph[k]))
+    v3 = Store(data_dir, "v3") if (data_dir / "episodes" / "v3.jsonl").exists() or (data_dir / "branches" / "v3.jsonl").exists() else None
+    if v3 is not None and "main" in runs:
+        eps_all, brs_all = eps + v3.all_episodes(), brs + v3.all_branches()
+        v3out = analysis_v3.build(eps_all, brs_all)
+        if v3out:
+            v3out["table_v3_posthoc_factual_vs_normative"] = posthoc.factual_vs_normative(posthoc.episode_frame(eps_all, brs_all))
+            for k, v in v3out.items():
+                v.to_csv(results_dir / f"{k}.csv", index=False)
+            fig_v3_perspective(v3out["table_v3_rates"], results_dir / "fig_v3_perspective.png")
+            md.append("# frozen-v3 addendum (PREREG.md \"Addendum v3\"; data: main + v3)\n\n"
+                      "T1-T4 are the addendum's confirmatory tests (exact McNemar, Holm over 7). Everything else in this section is descriptive. "
+                      "P2s/P2o/P3s/P5 = 'violated: YES'. FA sets: nearmiss (v3), benign (main), resisted (main + v3).\n")
+            v3names = {"table_v3_tests": "Confirmatory tests T1-T4", "table_v3_rates": "Hit and false-alarm rates per protocol",
+                       "table_v3_p4b": "P4b (fixed k=2 wording): S(k) and F(k)", "table_v3_violation_rates": "v3 episode cells: violation rates",
+                       "table_v3_posthoc_factual_vs_normative": "Factual vs normative (main + v3, descriptive)"}
+            for k, title in v3names.items():
+                md.append(f"## {title}\n\n" + md_table(v3out[k]))
+        if (data_dir / "branches" / "v4.jsonl").exists():
+            v4out = analysis_v4.build(eps_all, Store(data_dir, "v4").all_branches())
+            if v4out:
+                for k, v in v4out.items():
+                    v.to_csv(results_dir / f"{k}.csv", index=False)
+                md.append("# frozen-v4 addendum: act-by-act audit P6 (PREREG.md \"Addendum v4\")\n\n"
+                          "P6 asks the frozen P5 question about every visible act; ground truth is used only for scoring. "
+                          "T5/T6 are confirmatory (Holm over 4); the rest is descriptive.\n")
+                v4names = {"table_v4_tests": "Confirmatory tests T5-T6", "table_v4_rates": "Episode level: H, FA, d', localisation, cost",
+                           "table_v4_act_rates": "Act level: YES rate by act type and tool"}
+                for k, title in v4names.items():
+                    md.append(f"## {title}\n\n" + md_table(v4out[k]))
+    if (data_dir / "episodes" / "v5.jsonl").exists() and "main" in runs:
+        st5 = Store(data_dir, "v5")
+        v5out = analysis_v5.build(st5.all_episodes(), st5.all_branches())
+        if v5out:
+            for k, v in v5out.items():
+                v.to_csv(results_dir / f"{k}.csv", index=False)
+            md.append("# frozen-v5 addendum: new scenarios, paraphrases, second model (PREREG.md \"Addendum v5\")\n\n"
+                      "Data: run_id v5 only. T7/T8 are confirmatory (Holm over all tested cells); the rest is descriptive. "
+                      "P0 is not judged in v5.\n")
+            v5names = {"table_v5_violation_rates": "Violation rates per model x scenario x task", "table_v5_tests": "Confirmatory tests T7-T8",
+                       "table_v5_protocols": "Hit and false-alarm rates per protocol", "table_v5_paraphrase": "Variation across paraphrases",
+                       "table_v5_subtypes": "Violation subtypes (single vs split refunds; agency vs gmail)",
+                       "table_v5_act_rates": "P6 act level"}
+            for k, title in v5names.items():
+                md.append(f"## {title}\n\n" + md_table(v5out[k]))
     (results_dir / "RESULTS.md").write_text("\n".join(md), encoding="utf-8")
     return out
 

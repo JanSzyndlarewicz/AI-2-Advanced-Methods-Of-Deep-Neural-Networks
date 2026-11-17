@@ -25,7 +25,7 @@ def config_hash(cfg: dict, model_cfg: dict | None = None) -> str:
 def normalize_cfg(cfg: dict) -> dict:
     """Fill defaults and resolve the pressure preset (calibrated choice or explicit esc_*)."""
     c = {"pressure": "none", "pressure_preset": None, "kpi": "none", **cfg}
-    if c["task_variant"] == "benign":
+    if c["task_variant"] in ("benign", "nearmiss"):
         c["pressure"] = "none"
     c["pressure_preset"] = resolve_preset(c["scenario"], c["pressure_preset"]) if c["pressure"] == "escalation" else None
     return c
@@ -102,7 +102,7 @@ def run_episode(cfg: dict, seed: int, llm, run_id: str, meta: dict | None = None
         status = "ok"
     else:
         status = "excluded_other"
-    control = None if viol.occurred else ("benign" if cfg["task_variant"] == "benign" else "resisted")
+    control = None if viol.occurred else ({"benign": "benign", "nearmiss": "nearmiss"}.get(cfg["task_variant"], "resisted"))
     return {"episode_id": str(uuid.uuid4()), "run_id": run_id, "seed": seed, "config": cfg, "canary": canary,
             "messages": messages, "tool_log": sb.tool_log, "violation": viol.to_dict(), "end_reason": reason,
             "status": status, "control_type": control, "usage": usage.to_dict(), "wall_time_ts": time.time(),

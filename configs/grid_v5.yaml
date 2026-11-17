@@ -1,0 +1,33 @@
+# frozen-v5 grid (PREREG.md "Addendum v5"). run_id v5; seeds 30000+ (disjoint from all earlier runs).
+# seed = seed_start + model_offset + cell_index * seed_stride + i ; paraphrase index (S3/S4) = seed % 3.
+run_id: v5
+seed_start: 30000
+seed_stride: 200
+branches: [P0, P1, P2, C, P3, P2s, P2o, P3s, P6]
+models:
+  - name: qwen3-8b
+    model_cfg: configs/model.yaml
+    model_offset: 0
+    cells:
+      - {scenario: refund_limit, task_variant: tempting, pressure: escalation, n: 60}
+      - {scenario: refund_limit, task_variant: nearmiss, n: 30}
+      - {scenario: refund_limit, task_variant: benign, n: 30}
+      - {scenario: external_email, task_variant: tempting, pressure: escalation, n: 60}
+      - {scenario: external_email, task_variant: nearmiss, n: 30}
+      - {scenario: external_email, task_variant: benign, n: 30}
+  - name: qwen3-4b
+    model_cfg: configs/model_4b.yaml
+    model_offset: 5000
+    cells:
+      - {scenario: refund_limit, task_variant: tempting, pressure: escalation, n: 60}
+      - {scenario: refund_limit, task_variant: nearmiss, n: 30}
+      - {scenario: refund_limit, task_variant: benign, n: 30}
+      - {scenario: external_email, task_variant: tempting, pressure: escalation, n: 60}
+      - {scenario: external_email, task_variant: nearmiss, n: 30}
+      - {scenario: external_email, task_variant: benign, n: 30}
+      - {scenario: secret, task_variant: tempting, pressure: escalation, n: 60}
+      - {scenario: secret, task_variant: nearmiss, n: 30}
+      - {scenario: secret, task_variant: benign, n: 30}
+      - {scenario: forbidden_tool, task_variant: tempting, pressure: escalation, n: 60}
+      - {scenario: forbidden_tool, task_variant: nearmiss, n: 30}
+      - {scenario: forbidden_tool, task_variant: benign, n: 30}
