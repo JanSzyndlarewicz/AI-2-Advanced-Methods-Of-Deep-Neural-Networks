@@ -356,7 +356,7 @@ Opisuje model i jego ustawienia, warunek główny, testy statystyczne i kolejno�
 
 **Krok 8. Analiza** według planu z prerejestracji: tabele odsetków, miara rozróżniania, porównania z raportem swobodnym, koszty, sprawdzenie hipotez.
 
-Kroki od 3 wzwyż należą do kolejnych etapów kursu (etap 4: przygotowanie środowiska i pilotaż, etapy 5 i 6: eksperymenty i wyniki).
+Kroki od 2 wzwyż należą do kolejnych etapów kursu (etap 4: kalibracja, przygotowanie środowiska, pilotaż i zamrożenie, etapy 5 i 6: eksperymenty i wyniki).
 
 ---
 
